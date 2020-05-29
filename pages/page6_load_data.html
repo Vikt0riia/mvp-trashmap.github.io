@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>load_data</title>
+	</head>
+    <body>
+        <div id="container"></div>
+        <a href="../index.html">Home</a>
+    </body>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script>
+        let container = d3.select("#container")
+        d3.csv("./data/WorldBank/country_level_data_0.csv").then(function (data) {
+            write("Data is available")
+        })
+        write("Line after")
+        function write(text){
+            container.appen("div").text(text)
+        }
+    </script>
+        
+</html>
+
+            <!--
+            for (let client of data)
+                    {
+                        write(client.country_name)
+                    } 
+"https://github.com/Vikt0riia/mvp-trashmap.github.io/blob/master/data/WorldBank/country_level_data_0.csv"
+            -->
