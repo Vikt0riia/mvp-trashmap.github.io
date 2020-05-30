@@ -39,23 +39,23 @@
             return d;
            })
            console.log(mapInfo) 
-//            let max_msw = d3.max(mapInfo.features,
-//                                d => d.properties.total_msw)
-//            
-//            let cScale = d3.scaleLinear()
-//                        .domain([0, max_msw])
-//                        .range(["white", "red"])
-//            let bodyHeight = 400
-//            let bodyWidth = 400
-//            
-//            var projection = 
-//                d3.geoMercator()
-//                    .scale(80)
-//                    .translate([bodyWidth/2, bodyHeight/2])
-//            
-//            var path = d3.geoPath()
-//                .projection(projection);
-//            
+           let max_msw = d3.max(mapInfo.features,
+                               d => d.properties.total_msw)
+           
+           let cScale = d3.scaleLinear()
+                       .domain([0, max_msw])
+                       .range(["white", "red"])
+           let bodyHeight = 400
+           let bodyWidth = 400
+           
+           var projection = 
+               d3.geoMercator()
+                   .scale(80)
+                   .translate([bodyWidth/2, bodyHeight/2])
+           
+           var path = d3.geoPath()
+               .projection(projection);
+           
 //            body.selectAll("path").data(mapInfo.features)
 //                .enter().append("path")
 //                .attr("d", d => path(d))
