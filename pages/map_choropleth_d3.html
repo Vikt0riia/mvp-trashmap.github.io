@@ -56,14 +56,14 @@
            var path = d3.geoPath()
                .projection(projection);
            
-//            body.selectAll("path").data(mapInfo.features)
-//                .enter().append("path")
-//                .attr("d", d => path(d))
-//                .attr("stroke", "black")
-//                .attr("fill",
-//                     d => d.properties.total_msw ?
-//                      cScale(d.properties.total_msw) :
-//                      "white")
+           body.selectAll("path").data(mapInfo.features)
+               .enter().append("path")
+               .attr("d", d => path(d))
+               .attr("stroke", "black")
+               .attr("fill",
+                    d => d.properties.total_msw ?
+                     cScale(d.properties.total_msw) :
+                     "white")
         }
         
     </script>
