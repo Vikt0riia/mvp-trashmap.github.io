@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>map_choropleth_d3</title>
+    </head>
+        <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <body>
+        <a href="../index.html">Home</a>
+        <svg id = "container" width="400" height="300">
+            <g id = "body"></g>
+        </svg>
+    </body>
+
+    <script>
+        let body = d3.select('#body')
+        
+        Promise.all([
+            d3.csv("../data/WorldBank/country_level_data_0.csv"),
+            d3.json("../data/countries.geo.json")
+        ]).then(showData)
+        
+        function showData(datasources){
+            let mapInfo = datasources[1]
+            let data = datasources[0]
+            console.log(data)
+            
+            let dataIndex = {}
+            for(let c of data){
+                let country = c.country_name;
+                dataIndex[country] = +c.total_msw_total_msw_generated_tons_year;
+            }
+            //console.log(dataIndex)
+            
+            mapInfo.features = mapInfo.features.map( d=>{
+             let country = d.properties.name;
+             let total_msw = dataIndex[country]
+             d.properties.total_msw = total_msw;
+             return d;
+            })
+            //console.log(mapInfo) 
+            let max_msw = d3.max(mapInfo.features,
+                                d => d.properties.total_msw)
+            
+            let cScale = d3.scaleLinear()
+                        .domain([0, max_msw])
+                        .range(["white", "red"])
+            let bodyHeight = 400
+            let bodyWidth = 400
+            
+            var projection = 
+                d3.geoMercator()
+                    .scale(80)
+                    .translate([bodyWidth/2, bodyHeight/2])
+            
+            var path = d3.geoPath()
+                .projection(projection);
+            
+            body.selectAll("path").data(mapInfo.features)
+                .enter().append("path")
+                .attr("d", d => path(d))
+                .attr("stroke", "black")
+                .attr("fill",
+                     d => d.properties.total_msw ?
+                      cScale(d.properties.total_msw) :
+                      "white")
+        }
+        
+    </script>
+        
+</html>
