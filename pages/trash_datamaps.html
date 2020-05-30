@@ -142,7 +142,7 @@ myMap.updateChoropleth(dataset);
                 // tooltip content
                 return ['<div class="hoverinfo">',
                     '<strong>', geo.properties.name, '</strong>',
-                    '<br>Total msw in 2016: <strong>', data.total_msw/1000000, ' Mt tons</strong>',
+                    '<br>Total msw in 2016: <strong>', (data.total_msw/1000000).toFixed(2), ' Mt tons</strong>',
                     '</div>'].join('');
             }
         }
