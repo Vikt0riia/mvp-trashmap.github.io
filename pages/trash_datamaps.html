@@ -3,87 +3,36 @@
 <head>
     <style>
         .active { fill: blue !important;}
-        /*.datamaps-key dt, .datamaps-key dd {float: none !important;}
-        .datamaps-key {right: -50px; top: 0;}*/
+/*
+        .legend {
+          font-size: 12px;
+        } 
+*/
+        div.paragraph {
+            text-align: center;
+          }
     </style>
 </head>
 <p>
     <a href="../index.html" style = "position: absolute; z-index: 1;">Home</a>
 </p>
-    
+<!--
+    <div class="paragraph">  
+    <a href="https://datacatalog.worldbank.org/dataset/what-waste-global-database" style = "position: absolute; z-index: 1;">Data are publically available in World Bank: "What A Waste Global Database"</a>
+    </div>  
+-->
 <body>
 <!--<div id="container1" style="border:1px dotted blue; width: 700px; height: 475px; position: relative;"></div>-->
-<div id="container1" style="  position: fixed; top: 0%; left: 0; bottom: 0; right: 0; overflow: auto;"></div> 
+<!--<div id="container1" style="  position: fixed; top: 0%; left: 0; bottom: 0; right: 0; overflow: auto;"></div>-->
+<div id="container1" style="  position: fixed; top: 0%; left: 0px; bottom: 0; right: 0px; overflow: auto;"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.10.0/d3-legend.min.js"></script>
+<!--<script src="https://d3js.org/d3.v5.js"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
 <script src="https://datamaps.github.io/scripts/0.4.4/datamaps.world.min.js"></script>
+<script src="https://d3js.org/d3-scale.v3.min.js"></script>
 <script>
-//var globalcsvdata1
 
-//d3.csv("../data/WorldBank/country_level_data_0.csv", function(error, csvdata1) {
-//
-//    globalcsvdata1 = csvdata1;
-//
-//    for (var i=0;i<csvdata1.length;i++)
-//        { 
-//                globalcsvdata1[ globalcsvdata1[i].iso3c] = globalcsvdata1[i].total_msw_total_msw_generated_tons_year ;
-////                console.log(globalcsvdata1[i]);
-//                delete  globalcsvdata1[i].iso3c;
-//                delete  globalcsvdata1[i] ;
-//            }
-//myMap.updateChoropleth(globalcsvdata1);
-//
-//}
-//);
-
-//example 1 
-//d3.csv("../data/WorldBank/country_level_data_0.csv", function(error, csvdata1) {
-//
-//    var dataset = {};
-//    // We need to colorize every country based on "numberOfWhatever"
-//    // colors should be uniq for every value.
-//    // For this purpose we create palette(using min/max series-value)
-//    var onlyValues = csvdata1.map(function(d){ return d.total_msw_total_msw_generated_tons_year; });
-//    var minValue = Math.min.apply(null, onlyValues),
-//            maxValue = Math.max.apply(null, onlyValues);
-//
-//    // create color palette function
-//    // color can be whatever you wish
-//    var paletteScale = d3.scale.linear()
-//            .domain([minValue,maxValue])
-//            .range(["#EFEFFF","#02386F"]); // blue color
-//
-//    // fill dataset in appropriate format
-//    csvdata1.forEach(function(item){ //
-//        // item example value ["USA", 70]
-//        var iso = item.iso3c,
-//                value = item.total_msw_total_msw_generated_tons_year;
-//        dataset[iso] = { total_msw: value, fillColor: paletteScale(value) };
-//    });
-//    
-//myMap.updateChoropleth(dataset);
-//
-//}
-//);
-//
-//
-//var myMap = new Datamap({
-//    element: document.getElementById('container1'),
-//    scope: 'world',
-//    geographyConfig: {
-//        popupOnHover: true,
-//        highlightOnHover: false
-//    },
-//    fills: {
-//        'AA': '#1f77b4',
-//        'BB': '#9467bd',
-//        defaultFill: 'grey'
-//    }
-//
-//
-//});
-    
-// example 2
 var dataset = {};
 d3.csv("../data/WorldBank/country_level_data_0.csv", function(error, csvdata1) {
 
@@ -107,9 +56,36 @@ d3.csv("../data/WorldBank/country_level_data_0.csv", function(error, csvdata1) {
                 value = item.total_msw_total_msw_generated_tons_year;
         dataset[iso] = { total_msw: value, fillColor: paletteScale(value) };
     });
+
+// https://d3-legend.susielu.com/#color-linear
+//  var width = 2000,
+//      height = 50; 
+//  var div = d3.select("body").append("div")   
+//  .attr("class", "tooltip")               
+//  .style("opacity", 0);
+//
+//  var svg = d3.select("body").append("svg")
+//  .attr("width", width)
+//  .attr("height", height)
+//  .style("margin", "10px auto");
+//    
+//var linear = paletteScale;
+//
+//var svg = d3.select("svg");
+//
+//svg.append("g")
+//  .attr("class", "legendLinear")
+//  .attr("transform", "translate(20,20)");
+//
+//var legendLinear = d3.legend.color()
+//  .shapeWidth(300)
+//  .orient('horizontal')
+//  .scale(linear);
+//
+//svg.select(".legendLinear")
+//  .call(legendLinear);   
     
 myMap.updateChoropleth(dataset);
-
 }
 );
     
@@ -118,8 +94,14 @@ myMap.updateChoropleth(dataset);
     var myMap = new Datamap({
         element: document.getElementById('container1'),
         projection: 'mercator', // big world map
+        done: function(datamap){
+            datamap.svg.call(d3.behavior.zoom().on("zoom", redraw));
+            function redraw() {
+                datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            }
+        },
         // countries don't listed in dataset will be painted with this color
-        fills: { defaultFill: '#000000'},
+        fills: { defaultFill: '#FFFFFF'},
         data: dataset,
         geographyConfig: {
             borderColor: '#DEDEDE',
@@ -142,11 +124,14 @@ myMap.updateChoropleth(dataset);
                 // tooltip content
                 return ['<div class="hoverinfo">',
                     '<strong>', geo.properties.name, '</strong>',
-                    '<br>Total msw in 2016: <strong>', (data.total_msw/1000000).toFixed(2), ' Mt tons</strong>',
+                    '<br>Total msw : <strong>', (data.total_msw/1000000).toFixed(2), ' Mt tons</strong>',
                     '</div>'].join('');
             }
         }
     });
+    //myMap.legend();
+
+    
 </script>
 
 </body>
