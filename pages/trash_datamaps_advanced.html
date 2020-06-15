@@ -25,20 +25,26 @@
 <!--<div id="container1" style="border:1px dotted blue; width: 700px; height: 475px; position: relative;"></div>-->
 <!--<div id="container1" style="  position: fixed; top: 0%; left: 0; bottom: 0; right: 0; overflow: auto;"></div>-->
 <div id="container1" style="  position: fixed; top: 0%; left: 0px; bottom: 0; right: 0px; overflow: auto;"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.10.0/d3-legend.min.js"></script>
 <!--<script src="https://d3js.org/d3.v5.js"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.10.0/d3-legend.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
 <script src="https://datamaps.github.io/scripts/0.4.4/datamaps.world.min.js"></script>
+
+
 <script src="https://d3js.org/d3-scale.v3.min.js"></script>
+<!--<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>-->
 <script src="https://d3js.org/d3-axis.v1.min.js"></script>
 <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
-    
+
 <!--    <script src="https://d3js.org/d3.v4.min.js"></script>-->
+<!--<script src="https://d3js.org/d3.v4.min.js"></script>-->   
+    
+
 <script>
 
 var dataset = {};
-
+var colorLegend = {};
 d3.csv("../data/WorldBank/country_level_data_0.csv", function(error, csvdata1) {
 //
 //    // We need to colorize every country based on "numberOfWhatever"
@@ -48,15 +54,35 @@ d3.csv("../data/WorldBank/country_level_data_0.csv", function(error, csvdata1) {
     var minValue = Math.min.apply(null, onlyValues),
             maxValue = Math.max.apply(null, onlyValues);
     
-    var lowColor = "#EFEFFF";
-    var highColor = "#02386F"
+
     
     // create color palette function
-    // color can be whatever you wish
+    var lowColor = "#EFEFFF";
+    var highColor = "#02386F"
     var paletteScale = d3.scale.linear()
             .domain([minValue,maxValue])
             .range([lowColor,highColor]); // blue color
 
+//    var paletteScale = d3.scaleSequential()
+//        .domain([minValue,maxValue])
+//        .interpolator(d3.interpolateViridis);
+    
+    colorLegend = d3.legend.color()
+        .labelFormat(d3.format(".3s"))
+        .scale(paletteScale)
+        .shapePadding(5)
+        .shapeWidth(50)
+        .shapeHeight(20)
+        .labelOffset(12);
+    
+    var svg = d3.select("svg");
+    
+    svg.append("g")
+        .attr("transform", "translate(60, 360)")
+        .call(colorLegend);
+    
+//    svg.call(d3.behavior.zoom().on("zoom", colorLegend));
+    
     // fill dataset in appropriate format
     csvdata1.forEach(function(item){ //
         // item example value ["USA", 70]
@@ -65,139 +91,6 @@ d3.csv("../data/WorldBank/country_level_data_0.csv", function(error, csvdata1) {
         dataset[iso] = { total_msw: value, fillColor: paletteScale(value) };
     });
 
-//// https://d3-legend.susielu.com/#color-linear
-// this example works but with zoom and pin it isnt correct visualized, also it is horizontal while I would prefer vertical at the rigth
-//  var width = 2000,
-//      height = 50; 
-//  var div = d3.select("body").append("div")   
-//  .attr("class", "tooltip")               
-//  .style("opacity", 0);
-//
-//  var svg = d3.select("body").append("svg")
-//  .attr("width", width)
-//  .attr("height", height)
-//  .style("margin", "10px auto");
-//    
-//var linear = d3.scale.linear()
-//            .domain([minValue/100000,maxValue/1000000])
-//            .range(["#EFEFFF","#02386F"]); // blue color
-//
-//var svg = d3.select("svg");
-//
-//svg.append("g")
-//  .attr("class", "legendLinear")
-//  .attr("transform", "translate(20,20)");
-//
-//var legendLinear = d3.legend.color()
-//  .shapeWidth(300)
-//  .orient('horizontal')
-//  .scale(linear);
-//
-//svg.select(".legendLinear")
-//  .call(legendLinear);  
-    
-    
-// another example
-//  var width = 960,
-//  height = 500;
-//  // Setting color domains(intervals of values) for our map
-//  var ext_color_domain = [0, maxValue/5000000, maxValue*2/5000000, maxValue*3/5000000, maxValue*4/5000000]
-//  var legend_labels = ["0+", "bla+", "bla+", "bla+", "bla"]              
-////  var color = d3.scale.threshold()
-////  .domain(color_domain)
-////  .range(["#adfcad", "#ffcb40", "#ffba00", "#ff7d73", "#ff4e40", "#ff1300"]);
-//
-//    
-// var color = d3.scale.linear()
-//            .domain([minValue/100000,maxValue/1000000])
-//            .range(["#EFEFFF","#02386F"]); // blue color
-//
-// console.log(minValue)
-//  var div = d3.select("body").append("div")   
-//  .attr("class", "tooltip")               
-//  .style("opacity", 0);
-//
-//  var svg = d3.select("body").append("svg")
-//  .attr("width", width)
-//  .attr("height", height)
-//  .style("margin", "10px auto");
-// 
-//  //Adding legend for our Choropleth
-//
-//  var legend = svg.selectAll("g.legend")
-//  .data(ext_color_domain)
-//  .enter().append("g")
-//  .attr("class", "legend");
-//
-//  var ls_w = 20, ls_h = 20;
-//
-//  legend.append("rect")
-//  .attr("x", 20)
-//  .attr("y", function(d, i){ return height - (i*ls_h) - 2*ls_h;})
-//  .attr("width", ls_w)
-//  .attr("height", ls_h)
-//  .style("fill", function(d, i) { return color(d); })
-//  .style("opacity", 0.8);
-//
-//  legend.append("text")
-//  .attr("x", 50)
-//  .attr("y", function(d, i){ return height - (i*ls_h) - ls_h - 4;})
-//  .text(function(d, i){ return legend_labels[i]; });
-
-// one more example from : https://bl.ocks.org/wboykinm/dbbe50d1023f90d4e241712395c27fb3
-
-// add a legend
-		var w = 140, h = 300;
-
-		var key = d3.select("body")
-			.append("svg")
-			.attr("width", w)
-			.attr("height", h)
-			.attr("class", "legend");
-
-		var legend = key.append("defs")
-			.append("svg:linearGradient")
-			.attr("id", "gradient")
-			.attr("x1", "100%")
-			.attr("y1", "0%")
-			.attr("x2", "100%")
-			.attr("y2", "100%")
-			.attr("spreadMethod", "pad");
-
-		legend.append("stop")
-			.attr("offset", "0%")
-			.attr("stop-color", highColor)
-			.attr("stop-opacity", 1);
-			
-		legend.append("stop")
-			.attr("offset", "100%")
-			.attr("stop-color", lowColor)
-			.attr("stop-opacity", 1);
-
-		key.append("rect")
-			.attr("width", w - 100)
-			.attr("height", h)
-			.style("fill", "url(#gradient)")
-			.attr("transform", "translate(0,50)");
-
-		var yAxis = d3.axisRight(y);
-		var y = d3.scaleLinear()
-			.range([h, 0])
-			.domain([minValue/1000000, maxValue/1000000]);
-
-//		var yAxis = d3.axisRight(y);
-        var yAxis = d3.axisRight(y).tickFormat(function(d){ return d.y;});
-//        var yAxis = d3.svg.axis()
-//            .scale(y)
-//            .orient("right")
-//            .ticks(2)
-//            .tickSize(10)
-//            .tickFormat(formatPercent);
-		key.append("g")
-			.attr("class", "y axis")
-			.attr("transform", "translate(41,10)")
-//			.call(yAxis)
-    
 myMap.updateChoropleth(dataset);
 }
 );
@@ -207,12 +100,12 @@ myMap.updateChoropleth(dataset);
     var myMap = new Datamap({
         element: document.getElementById('container1'),
         projection: 'mercator', // big world map
-        done: function(datamap){
-            datamap.svg.call(d3.behavior.zoom().on("zoom", redraw));
-            function redraw() {
-                datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            }
-        },
+//        done: function(datamap){
+//            datamap.svg.call(d3.behavior.zoom().on("zoom", redraw));
+//            function redraw() {
+//                datamap.svg.selectAll("g").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+//            }
+//        },
         // countries don't listed in dataset will be painted with this color
         fills: { defaultFill: '#FFFFFF'},
         data: dataset,
